@@ -17,3 +17,9 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret: ThisTokenIsNotSoSecretChangeIt
+    
+    #paramètres de l'application
+    app.scripts_path: /MyGowD/emotes/scripts
+    app.render_script: render.sh
+    app.template_html: template.html
+    app.emotes_script: emotes.sh
