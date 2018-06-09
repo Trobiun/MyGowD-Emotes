@@ -36,4 +36,4 @@ services:
     app.execute_script_service:
         public: true
         class: AppBundle\Services\ExecuteScriptService
-        arguments: ["%app.scripts_path%","%app.render_script%","%app.template_html%","%app.emotes_script%"]
+        arguments: ["%app.scripts_path%","%app.render_script%","%app.template_html%","%app.emotes_script%","%app.emotes_list%"]

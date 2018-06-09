@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
 class DefaultController extends Controller {
 
@@ -32,16 +33,21 @@ class DefaultController extends Controller {
                         'Croissant' => 'asc',
                         'Décroissant' => 'dsc'
                     ),
-                    'data' => 'asc'
+                    'data' => 'dsc'
                 ))
                 ->add('blacklist', TextareaType::class, array(
-                    'label' => 'Blacklist utilisateurs',
+                    'label' => 'Blacklist utilisateurs (à séparer par une espace ou virgule)',
                     'required' => false
                 ))
                 ->add('whitelist', TextareaType::class, array(
-                    'label' => 'Whitelist utilisateurs',
+                    'label' => 'Whitelist utilisateurs (à séparer par une espace ou virgule)',
                     'required' => false
                 ))
+                ->add('emoticones', TextareaType::class, array(
+                    'label' => 'Émoticones supplémentaires (à séparer par une espace ou virgule)',
+                    'required' => false
+                ))
+                ->add('Réinitialiser', ResetType::class)
                 ->add('confirmer', SubmitType::class);
         
         $res = '';
@@ -53,38 +59,45 @@ class DefaultController extends Controller {
             $order = $data['order'];
             
             $blacklistFilename = tempnam('/tmp','blacklist_users_');
-            $blacklistFileTemp = fopen($blacklistFilename,'w+');
             $this->string_users_to_file_users($data['blacklist'],$blacklistFilename);
             
             $whitelistFilename = tempnam('/tmp','whitelist_users_');
-            $whitelistFileTemp = fopen($whitelistFilename,'w+');
             $this->string_users_to_file_users($data['whitelist'],$whitelistFilename);
             
-            $renderService = $this->container->get('app.execute_script_service');
-            $res = $renderService->execute($sortby, $order, $blacklistFilename, $whitelistFilename);
+            $emoticonesFilename = tempnam('/tmp','emoticones_');
+            $original_emotes_file = $_SERVER['DOCUMENT_ROOT'] . $this->container->getParameter('app.scripts_path') . '/' . $this->container->getParameter('app.emotes_list');
+            $this->append_emoticones($original_emotes_file, $data['emoticones'], $emoticonesFilename);
             
-            fclose($blacklistFileTemp);
-            fclose($whitelistFileTemp);
+            $renderService = $this->container->get('app.execute_script_service');
+            $res = $renderService->execute($sortby, $order, $blacklistFilename, $whitelistFilename, $emoticonesFilename);
+            
             unlink($blacklistFilename);
             unlink($whitelistFilename);
+            unlink($emoticonesFilename);
         }
         
         return $this->render('default/index.html.twig', array(
                     'form' => $form->createView(),
                     'res' => $res
         ));
-//        return $this->render('default/index.html.twig', [
-//                    'base_dir' => realpath($this->getParameter('kernel.project_dir')) . DIRECTORY_SEPARATOR,
-//        ]);
     }
     
     private function string_users_to_file_users($list, $filename) {
         $str_users = str_replace(',', ' ', $list);
         $patterns = ['/[[:space:]]/m', '/^/m', '/$/m', '/<>/'];
         $replacements = [PHP_EOL, '<', '>', ''];
-
+        
         $users_file_content = preg_replace($patterns, $replacements, $str_users);
         file_put_contents($filename, $users_file_content);
+    }
+    
+    private function append_emoticones($original_file, $emotes_added, $filename) {
+        $original_emotes = file_get_contents($original_file);
+        file_put_contents($filename, $original_emotes);
+        
+        $str_emotes_add = str_replace(',', ' ', $emotes_added);
+        $emotes_to_add = preg_replace('/[[:space:]]/', PHP_EOL, $str_emotes_add);
+        file_put_contents($filename, $emotes_to_add, FILE_APPEND);
     }
     
 }

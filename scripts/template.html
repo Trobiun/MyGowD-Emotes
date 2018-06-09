@@ -3,13 +3,13 @@
 <h3>Pourcentage de lignes contenant au moins une emote : ${percent_lines_with_emotes} % </h3>
 <h3>Moyenne d'emotes par ligne qui en contient au moins une : ${average_emotes_per_line}</h3>
 <h3>Tri par ${sort_message} :</h3>
-$(for i in $(seq 1 $(($(echo ${emotes_while} | wc --words) -0)) )
+$(for i in $(seq 1 $(($(echo ${emotes_while} | wc --words))) )
 do
 echo "<div class=\"tab\">"
     echo "<h4>${emotes[$i]} : </h4>"
     echo "	emotes		=	${words_for_emote[$i]} / ${count_total_emotes}<br/>"
-    echo "	emotes/total	=	${emotes_per_total[$i]} %<br/>"
+    echo "	emotes / total	=	${emotes_per_total[$i]} %<br/>"
     echo "	lignes		=	${count_lines_for_emote[$i]} / ${count_lines_with_emotes}<br/>"
     echo "	"
-    echo "	emotes/ligne	=	${words_per_line[$i]}<br/></div>"
+    echo "	emotes / ligne	=	${words_per_line[$i]}<br/></div>"
 done)

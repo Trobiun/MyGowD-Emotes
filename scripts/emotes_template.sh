@@ -49,6 +49,7 @@ order="${@:4:1}"
 blacklist_users_file="${@:5:1}"
 whitelist_users_file="${@:6:1}"
 LIST_USER_FILE="${@:7:1}"
+EMOTES_FILE="${@:8:1}"
 
 count_days=$(find "${DIR_LOGS}" -type f | wc --lines)
 lines_conv=$(find "${DIR_LOGS}" -type f -exec cat '{}' ';' | grep --invert-match "\*\*\*")

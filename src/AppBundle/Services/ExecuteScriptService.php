@@ -22,12 +22,10 @@ class ExecuteScriptService {
         $this->emotes_script = $emotes_script;
     }
     
-    public function execute($sortby, $order, $blacklist_users_file, $whitelist_users_file) {
-//        exec("$this->render_script $this->template_html $this->emotes_script $sortby $order $blacklist_users_file $whitelist_users_file ", $array);
+    public function execute($sortby, $order, $blacklist_users_file, $whitelist_users_file, $list_emotes_filename) {
         chdir($_SERVER['DOCUMENT_ROOT'] . $this->scripts_path);
         $list_user_filename = tempnam('/tmp', 'users_list_');
-        $string = shell_exec("./$this->render_script $this->template_html $this->emotes_script $sortby $order $blacklist_users_file $whitelist_users_file $list_user_filename 2>&1");
-//        exec("./$this->emotes_script $sortby $order $blacklist_users_file $whitelist_users_file $whitelist_user_filename 2>&1", $array);
+        $string = shell_exec("./$this->render_script $this->template_html $this->emotes_script $sortby $order $blacklist_users_file $whitelist_users_file $list_user_filename $list_emotes_filename 2>&1");
         unlink($list_user_filename);
         return $string;
     }
